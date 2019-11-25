@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Raport</title>
+    <link rel="stylesheet" href="css/scholarly.min.css">
+</head>
+<body>
+<div>
+    <header>
+        <div class="banner">
+            <img src="scholarly-html.svg" width="227" height="50" alt="Scholarly HTML logo">
+
+            <div class="status">
+                Community Draft
+            </div>
+        </div>
+        <h1>Arhitectura FRIC</h1>
+        <h5>Author: <a href="https://github.com/viman39">Gheoca Victor-Manuel</a> Anul III, Grupa B2</h5></header>
+    <h5>GitHub: <a href="https://github.com/viman39/DAWJsFRIC">DAWJsFRIC</a></h5>
+</div>
+<div class ="cuprins">
+    <ol>
+        <li><a href="#Introducere">Introducere</a></li>
+        <li><a href="#Structura">Structura</a></li>
+        <li><a href="#Tehnologii">Tehnologii utilizate</a></li>
+        <li><a href="#Referinte">Referinte</a></li>
+    </ol>
+</div>
+
+<div id="Introducere" class="section">
+    <header><h3>1. Introducere</h3></header>
+    <p>
+        <strong>Tema aplicatiei:</strong> Se doreşte dezvoltarea unui cadru-suport (framework, platformă) pentru a vizualiza eficient diverse tipuri de fractali -- minimal, sisteme generative precum fractalii Lindenmayer (L-systems) implicând un număr foarte mare de reguli şi/sau iteraţii. Modalitatea de redare (2D şi 3D) va recurge la utilizarea uneia sau mai multor soluţii aliniate problematicilor cloud computing -- a se explora resursele oferite de Awesome Cloud Native.
+    </p>
+</div>
+
+<div id="Structura" class="section">
+    <header><h3>2. Structura</h3></header>
+    <p>
+        Colocvial, un fractal este o figură geometrică fragmentată sau frântă care poate fi divizată în părți, astfel încât fiecare dintre acestea să fie (cel puțin aproximativ) o copie miniaturală a întregului.
+        <img src="./diagrame/fractal.gif" alt="fractal" style="width:50%">
+    </p>
+    <p>
+        <strong>Idee principala a dezvoltarii:</strong> Aplicatia va fi o aplicatie de tipul platforma, ce se va incadra in <strong>tipologia Server-Client</strong> (Tipologia client-server reprezinta un device centralizat de tip server la care mai multi clienti "slabi" sunt conectati. Clientii se bazeaza pe server pentru resurse precum fisiere sau chiar putere de procesare.).
+        Odata logat, clientul v-a putea alege diferite pattern-uri si reguli pentru generarea fractalilor.
+        Atat pattern-urile de adancime 1, cat si anumite pattern-uri dorite de utilizatori, vor fi stocate pe un server de tip Cloud.
+    </p>
+    <p>
+        <strong>Usecase:</strong>Utilizatorul se conecteaza la server. Server-ul face un request de autentificare.
+        Dupa autentificare server-ul face un request la cloud si da raspuns utilizatorului galeria de fractali si editorul de reguli.
+        In cazul in care doreste utilizatorul, server-ul poate salva anumite reguli in baza de date precum si anumite patternuri obtinute prin generarea fractalilor.
+        <img src="./diagrame/usecase.jpg" alt="usecase" style="width:100%;">
+    </p>
+    <p>
+        <strong>Arhitectura baza de date:</strong>
+        Baza de date va fi alcatuita din 3 tabele. <br>
+        Tabel user, pentru managementul userilor.
+        Tabela fractal, pentru managementul fractalilor.
+        Tabela fractali_user, pentru inregistrarea actiunilor userilor pe platforma, dar, si pentru stocarea destinatiilor fractalilor salvati pe cloud sub forma (user_tag.id_fractal).
+        <img src="./diagrame/db.png" alt="db" style="width:100%;">
+    </p>
+</div>
+
+<div id="Tehnologii" class="section">
+    <header><h3>3. Tehnologii utilizate</h3></header>
+    <p>
+        <strong>HTML5</strong>(HyperText Markup Language), o tehnologie nucleu pentru internet, propusa intial pentru browser-ul Opera, este un limbaj pentru structurarea si prezentarea continutului WWW(World Wide Web) <br />
+        <strong>CSS</strong>(Cascading Style Sheets), este un standard pentru formatarea elementelor unui document HTML. <br>
+        <strong>Node.js</strong> este un runtime environment pentru javascript care executa cod javascript inafara browser-ului, dand astfel oportunitatea programatorilor sa foloseasca javascript pentru partea de back-end a aplicatiilor.<br>
+        <strong>Sequelize</strong> este un sistem de gestiune a bazelor de date relaționale print intermediul folosind mapping intre obiecte si tabele.<br>
+        <strong>Cloud storage</strong> este un model de stocare a datelor.
+    </p>
+</div>
+
+<div id="Referinte" class="referinte">
+    <header><h3>4. Referinte</h3></header>
+        Wikipedia:
+        <ul>
+            <li>
+                <small>https://en.wikipedia.org/wiki/Cloud_storage</small>
+            </li>
+            <li>
+                <small>https://en.wikipedia.org/wiki/Node.js</small>
+            </li>
+            <li>
+                <small>https://ro.wikipedia.org/wiki/Fractal</small>
+            </li>
+        </ul>
+
+        Other:
+        <ul>
+            <li>
+                <small>https://fractalfoundation.org/resources/what-are-fractals/</small>
+            </li>
+            <li>
+                <small>https://sequelize.org/</small>
+            </li>
+            <li>
+                <small>https://www.orosk.com/client-server-topology/</small>
+            </li>
+        </ul>
+
+        Pentru design pattern-uri:
+        <ul>
+            <li>
+                <small>https://www.draw.io/</small>
+            </li>
+        </ul>
+
+        Validare HTML:
+        <ul>
+            <li>
+                <small>https://validator.w3.org/nu/#textarea</small>
+            </li>
+        </ul>
+</div>
+</body>
+</html>
