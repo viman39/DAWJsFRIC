@@ -1,0 +1,70 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  .sidenav {
+    height: 100%;
+    width: 15%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+  }
+  
+  .sidenav a {
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .active{
+    color: black !important;
+    background-color: white;
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .sidenav a:hover {
+    background-color: white;
+    color: black;
+  }
+  
+  .sidenav .title { 
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid;
+    border-color: white;
+  }
+  
+  .content {
+    margin-left: 15%;
+    background-color: white;
+    width: 85%;
+  }
+  
+  .rules {
+      font-size: 20px;
+      margin-left:15%;
+      border-bottom: 1px solid;
+      border-color: black;
+  }
+  
+  .rules .title{
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+    display: inline-block;
+    border-bottom: 1px solid;
+    border-color: white;   
+  }

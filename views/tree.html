@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>FracTastic</title>
+</head>
+<body>
+    <a href="/">Back</a>
+    
+        <canvas id="myCanvas" width="1200" height="800" style="border:1px solid #d3d3d3;">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>  
+
+        <script>
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+
+            drawTree(200, 600, 60, -Math.PI / 2, 8, 15);
+
+            function drawTree(startX, startY, length, angle, depth, branchWidth) {
+                var rand = Math.random;
+                var newLength, newAngle, newDepth, maxBranch = 3,
+                endX, endY, maxAngle = 2 * Math.PI / 6, subBranches;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                endX = startX + length * Math.cos(angle);
+                endY = startY + length * Math.sin(angle);
+                ctx.lineCap = 'round';
+                ctx.lineWidth = branchWidth;
+                ctx.lineTo(endX, endY);
+
+                ctx.stroke();
+                newDepth = depth - 1;
+
+                if(!newDepth) {
+                    return;
+                }
+                subBranches = (rand() * (maxBranch - 1)) + 1;
+                branchWidth *= 0.7;
+
+                for (var i = 0; i < subBranches; i++) {
+                    newAngle = angle + rand() * maxAngle - maxAngle * 0.5;
+                    newLength = length * (0.7 + rand() * 0.3);
+                    drawTree(endX, endY, newLength, newAngle, newDepth, branchWidth);
+                }
+
+            }
+    
+        </script>    
+</body>
+</html>
