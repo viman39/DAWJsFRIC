@@ -43,22 +43,86 @@
     </p>
     <p>
         <strong>Idee principala a dezvoltarii:</strong> Aplicatia va fi o aplicatie de tipul platforma, ce se va incadra in <strong>tipologia Server-Client</strong> (Tipologia client-server reprezinta un device centralizat de tip server la care mai multi clienti "slabi" sunt conectati. Clientii se bazeaza pe server pentru resurse precum fisiere sau chiar putere de procesare.).
-        Odata logat, clientul v-a putea alege diferite pattern-uri si reguli pentru generarea fractalilor.
-        Atat pattern-urile de adancime 1, cat si anumite pattern-uri dorite de utilizatori, vor fi stocate pe un server de tip Cloud.
+        Odata ajuns pe pagina de pornire a aplicatiei clientul poate naviga printre fractalii pusi la dispozitie.
+
+        <img src="./diagrame/template.jpg" alt="template" style="width: 100%">
     </p>
     <p>
-        <strong>Usecase:</strong>Utilizatorul se conecteaza la server. Server-ul face un request de autentificare.
-        Dupa autentificare server-ul face un request la cloud si da raspuns utilizatorului galeria de fractali si editorul de reguli.
-        In cazul in care doreste utilizatorul, server-ul poate salva anumite reguli in baza de date precum si anumite patternuri obtinute prin generarea fractalilor.
+        <strong>Arhitectura:</strong>Utilizatorul se intra pe platforma. Este dus la pagina de index.
+        Aici poate naviga printre fractalii pusi la dispozitie setand diferite reguli.
+        De fiecaredate cand un fractal este generat se face un fetch la o functie de pe Google Cloud Functions, care genereaza un obiect din clasa canvas. Obiectul este trimis la server iar serverul construieste obiectul (apeland functia stroke() ).
         <img src="./diagrame/usecase.jpg" alt="usecase" style="width:100%;">
     </p>
     <p>
-        <strong>Arhitectura baza de date:</strong>
-        Baza de date va fi alcatuita din 3 tabele. <br>
-        Tabel user, pentru managementul userilor.
-        Tabela fractal, pentru managementul fractalilor.
-        Tabela fractali_user, pentru inregistrarea actiunilor userilor pe platforma, dar, si pentru stocarea destinatiilor fractalilor salvati pe cloud sub forma (user_tag.id_fractal).
-        <img src="./diagrame/db.png" alt="db" style="width:100%;">
+        <strong>Flow-ul de date:</strong>
+        <ul>
+            <li>O persona acceseaza platforma</li>
+            <li>By default este afisat fractalul "Tree" cu valorile default de generare</li>
+            <li>
+                Daca utilizatorul modifica regulile de generare sau da click pe alt fractal pus la dispozitie: 
+                <ul>
+                    <li>Se valideaza valorile de la reguli</li>
+                    <li>Se face un request la Google Cloud Function, apelandu-se functia specifica fractalului selectat</li>
+                    <li>Google Cloud Functions genereaza o instanta ca clasei Canvas si o returneaza server-ului</li>
+                    <li>Serverul primeste instanta de Canvas si o construieste cu functia stroke();</li>
+                </ul>
+            </li>
+        </ul>
+    </p>
+    <p>
+        <strong>Generarea fractalilor:</strong>
+        In momentul de fata sunt pusi la dispozitia utilizatorului 3 fractali: <br />
+        <strong>Tree</strong> Generarea fractalului arborescent. <br />
+        <strong>Parametri</strong>
+        <ul>
+            <li>Length: lungimea de pornire a "bratelor"</li>
+            <li>Depth: numarul maxim de nivele pe care sa urce arborele</li>
+            <li>Max Ramification: numarul maxim de ramificatii</li>
+            <li>Angle(needitabil): unghiul la care se formeaza "bratele"</li>
+            <li>subBranches(needitabil): un array (de tuple x, y - coordonate) cu toate bratele ce urmeaza sa fie construite (inital e doar "radacina")</li>
+        </ul>
+        <strong>Algoritm de generare</strong>
+        <ul>
+            <li>cat timp nu ajungem pe ultimul nivel (nivel_actual != depth)</li>
+            <li>pentru fiecare element din subBranches desenam bratul indicat </li>
+            <li>ajustam unghiurile(care se maresc progresiv) si lungimea crengilor (care scade progresiv)</li>
+            <li>generam un nou array de subBranches care vor fi legate de ramurile de pe nivelul actual</li>
+            <li>incrementam nivel_actual</li>
+        </ul><br />
+
+        <strong>Triangle ( Sierpinski Triangle )</strong> Generarea fractalului Triunghiul lui Sierpinski <br />
+        <strong>Parametri</strong>
+        <ul>
+            <li>Iteratii: numarul de iteratii</li>
+            <li>TriangleArray(needitabil): un array ce contine 3-uple de coordonate (x, y, z - reprezentand coordonatele colturile unui triunghi echilateral)</li>
+        </ul>
+        <strong>Algoritm de generare</strong>
+        <ul>
+            <li>Algoritmul ruleaza cat timp iteratiile sunt > 0, folosim "iteration--" la fiecare final de iteratie</li>
+            <li>Pentru fiecare element din TriangleArray se repeta urmatoarele actiuni. Initial TriangleArray contine doar un 3-uplu ce reprezinta coordonatele de pornire ale algoritmului</li>
+            <li>Se construieste triunghiul de baza (un simplu triunghi echilateral)</li>
+            <li>Se marcheaza mijloacele laturilor triunghiului ( ( Ax + Bx ) / 2 , ( Ay + By ) / 2 ) </li>
+            <li>Se traseaza liniile intre fiecare 2 mijloace</li>
+            <li>Se adauga in lista TriangleArray un 3-uplu de coordonate format din coordonatele varfului unui unghi si coordonatele celor mai apropiate 2 mijloace de acesta</li>
+        </ul><br />
+
+        <strong>Line ( Koch Curve )</strong> Generarea fractalului Curba Koch 
+        <strong>Parametri</strong>
+        <ul>
+            <li>Iteratii: numarul de iteratii</li>
+            <li>LinesArray(needitabil): un array ce contine 2-uple de coordonate ce reprezinta punctele de pe curba</li>
+        </ul>
+        <strong>Algoritmul de generare</strong>
+        <ul>
+            <li>Algoritmul ruleaza cat timp iteratiile sunt > 0, folosim "iteration--" la fiecare final de iteratie</li>
+            <li>Pentru fiecare element din LinesArray se repeta urmatoarele actiuni</li>
+            <li>Se calculeaza punctele ce se afla la p1/3 si p2/3 din distanta dintre cele 2 puncte din 2-uplu</li>
+            <li>Acestea vor reprezenta baza triunghiului echilateral. Calculam distanta dintre cele 2 puncte</li>
+            <li>d(p1/3, p2/3) = baza triunghiului echilateral. O putem folosi pentru a afla inaltimea triunghiului</li>
+            <li>Avnad inaltimea triunghiului putem determina coordonatele varfului triunghiului</li>
+            <li>Trasam noile linii</li>
+            <li>Pentru fiecare 2 puncte consecutive se adauga un 2-uplu in LinesArray</li>
+        </ul>
     </p>
 </div>
 
@@ -68,8 +132,7 @@
         <strong>HTML5</strong>(HyperText Markup Language), o tehnologie nucleu pentru internet, propusa intial pentru browser-ul Opera, este un limbaj pentru structurarea si prezentarea continutului WWW(World Wide Web) <br />
         <strong>CSS</strong>(Cascading Style Sheets), este un standard pentru formatarea elementelor unui document HTML. <br>
         <strong>Node.js</strong> este un runtime environment pentru javascript care executa cod javascript inafara browser-ului, dand astfel oportunitatea programatorilor sa foloseasca javascript pentru partea de back-end a aplicatiilor.<br>
-        <strong>Sequelize</strong> este un sistem de gestiune a bazelor de date relaționale print intermediul folosind mapping intre obiecte si tabele.<br>
-        <strong>Cloud storage</strong> este un model de stocare a datelor.
+        <strong>Google Cloud Functions</strong> este un serviciu pus la dispozitie de cei de la Google, pe care il voi folosi pentru puterea de procesare (procesarea fractalilor).
     </p>
 </div>
 
