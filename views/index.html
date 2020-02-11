@@ -30,7 +30,7 @@
             Rules:
         </span> 
         <form>
-            <span id="rules">
+            <span id="rules-span">
                 <span>
                     <label for="ruleLength">Length</label>
                     <input id="ruleLength" name="ruleLength" type="number" min="10" max="100" value="60">
@@ -80,7 +80,7 @@
             case 'tree':
 
                 if ( updateRules == true ){
-                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/tree.html" ></object>';
+                    document.getElementById("rules-span").innerHTML='<span><label for="ruleLength">Length</label><input id="ruleLength" name="ruleLength" type="number" min="10" max="100" value="60"></span><span><label for="ruleDepth">Depth</label><input id="ruleDepth" name="ruleDepth" type="number" min="1" max="20" value="8"</span><span><label for="ruleRamification">Max Ramification</label><input id="ruleRamification" name="ruleRamification" type="number" min="1" max="10" value="5"></span>';
                 }
 
                 var ruleLength = document.getElementById('ruleLength');
@@ -127,7 +127,7 @@
             case 'line':
 
                 if ( updateRules == true ){
-                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/line.html" ></object>';
+                    document.getElementById("rules-span").innerHTML='<span><label for="ruleIterations">Iterations</label><input id="ruleIterations" name="ruleIterations" type="number" min="1" max="10" value="3"></span>';
                 }
 
                 ctx = drawLine(ctx, 0, 500, 1000, 500, 1);
@@ -138,7 +138,7 @@
             case 'triangle':
 
                 if ( updateRules == true ){
-                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/triangle.html" ></object>';
+                    document.getElementById("rules-span").innerHTML='<span><label for="ruleIterations">Iterations</label><input id="ruleIterations" name="ruleIterations" type="number" min="1" max="20" value="3"></span>';
                 }
 
                 var ruleIterations = document.getElementById('ruleIterations');
@@ -153,7 +153,7 @@
                     }
                     console.log(iters)
                 } else {
-                    iters = 3;
+                    iters = 5;
                     console.log('nope');
                 }
 
@@ -205,9 +205,7 @@
                 maxAngle = newAngle*0.5
                     
                 }
-
             }
-
             depth--;
         }
         
@@ -260,14 +258,17 @@
         while ( iterations > 0 ){
             var T = triangles;
             triangles = [];
-            console.log("work");
+            iterations--;
+
+
             for ( var i = 0; i < T.length; i++ ){
                 ctx.moveTo(T[i][0][0], T[i][0][1]);
                 ctx.lineTo(T[i][1][0], T[i][1][1]);
                 ctx.lineTo(T[i][2][0], T[i][2][1]);
                 ctx.lineTo(T[i][0][0], T[i][0][1]);
 
-                var midABx = ( T[i][0][0] + T[i][1][0] ) / 2;
+                if ( iterations > 0 ){
+                    var midABx = ( T[i][0][0] + T[i][1][0] ) / 2;
                 var midABy = ( T[i][0][1] + T[i][1][1] ) / 2;
 
                 ctx.moveTo(midABx, midABy);
@@ -286,7 +287,7 @@
                 triangles[triangles.length] = [
                     [midABx, midABy],
                     [T[i][0][0], T[i][0][1]],
-                    [midCAx,, midCAy]
+                    [midCAx, midCAy]
                 ];
 
                 triangles[triangles.length] = [
@@ -301,9 +302,8 @@
                     [midBCx, midBCy]
                 ];
 
+                }
             }
-
-            iterations--;
         }
 
         return ctx;
