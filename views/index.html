@@ -130,7 +130,7 @@
                     document.getElementById("rules-span").innerHTML='<span><label for="ruleIterations">Iterations</label><input id="ruleIterations" name="ruleIterations" type="number" min="1" max="10" value="3"></span>';
                 }
 
-                ctx = drawLine(ctx, 0, 500, 1000, 500, 1);
+                ctx = drawLine(ctx, 0, 500, 1000, 500, 2);
                 ctx.stroke();
 
                 return false;
@@ -146,8 +146,8 @@
                 if ( ruleIterations != null ){
                     if ( ruleIterations.value < 1 ){
                         iters = 1;
-                    } else if ( ruleIterations.value > 20 ) {
-                        iters = 20;
+                    } else if ( ruleIterations.value > 10 ) {
+                        iters = 10;
                     } else {
                         iters = ruleIterations.value;
                     }
@@ -222,7 +222,7 @@
             var l = lines;
 
             lines = [];
-
+            console.log(l);
             for ( var i = 0; i < l.length; i++ ){ // pentru fiecare pereche [ax, ay] , [bx, by]
                 ctx.moveTo(l[i][0][0], l[i][0][1]);
                 ctx.lineTo(l[i][1][0], l[i][1][1]);
@@ -236,7 +236,11 @@
                     lines[lines.length] = [[l[i][0][0], l[i][0][1]], [frstThirdX, frstThirdY]];
                     lines[lines.length] = [[scndThridX, scndThridY], [l[i][1][0], l[i][1][1]]];
 
-                    var baseLength;
+                    var baseLength = Math.sqrt( Math.pow( scndThridX-frstThirdX, 2 ) + Math.pow( scndThridY-frstThirdY, 2 ) );
+                    var height = ( baseLength * Math.sqrt(3) ) / 2;
+                    
+                    lines[lines.length] = [[frstThirdX, frstThirdY], [ (frstThirdX + scndThridX) / 2, (frstThirdX + scndThridX) / 2 - height]];
+                    lines[lines.length] = [[ (frstThirdX + scndThridX) / 2, (frstThirdX + scndThridX) / 2 - height], [scndThridX, scndThridY]];
                 }
             }
         }
