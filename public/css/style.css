@@ -68,3 +68,13 @@
     border-bottom: 1px solid;
     border-color: white;   
   }
+
+  .generate-button{
+    position: absolute;
+    display: inline-block;
+    right: 10px;
+  }
+
+  form {
+    display: inline-block;
+  }

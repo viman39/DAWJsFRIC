@@ -1,48 +1,31 @@
+function drawLine(ctx, aX, aY, bX, bY, iterations){
+    ctx.beginPath();
 
-<body>
-    <canvas id="myCanvas" width="720" height="430" style="border:1px solid #d3d3d3;">
-        Your browser does not support the HTML5 canvas tag.
-    </canvas>
-    <script>
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
+    var lines = [[[aX, aY], [bX, bY]]];
 
-        ctx.beginPath();
-        ctx.fillStyle = "#131364";
-        ctx.fillRect(5, 5, 710, 420);
-        ctx.stroke();
+    while ( iterations > 0 ){
+        iterations--;
+        var l = lines;
 
-        ctx.beginPath();
-        ctx.fillStyle = "#d0c54b";
-        ctx.arc(600, 75, 50, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.stroke();
+        lines = [];
 
-        ctx.beginPath();
-        ctx.fillStyle = "#000";
-        ctx.moveTo(5, 420);
-        ctx.lineTo(75, 200);
-        ctx.lineTo(150, 420);
-        ctx.lineTo(185, 150);
-        ctx.lineTo(220, 250);
-        ctx.lineTo(260, 0);
-        ctx.lineTo(300, 420);
-        ctx.fill();
+        for ( var i = 0; i < l.length; i++ ){ // pentru fiecare pereche [ax, ay] , [bx, by]
+            ctx.moveTo(l[i][0][0], l[i][0][1]);
+            ctx.lineTo(l[i][1][0], l[i][1][1]);
 
-        window.requestAnimationFrame(onFrame);
+            if ( iterations > 0 ){
+                var frstThirdX = l[i][0][0] + ( l[i][1][0] - l[i][0][0] ) * ( 1 / 3);
+                var frstThirdY = l[i][0][1] + ( l[i][1][1] + l[i][0][1] ) * ( 1 / 3);
+                var scndThridX = l[i][0][0] + ( l[i][1][0] - l[i][0][0] ) * ( 2 / 3);
+                var scndThridY = l[i][0][1] + ( l[i][1][1] - l[i][0][1] ) * ( 2 / 3);
 
-        function onFrame(){
-            ctx.clearRect(0, 0, 720, 430);
+                lines[lines.length] = [[l[i][0][0], l[i][0][1]], [frstThirdX, frstThirdY]];
+                lines[lines.length] = [[scndThridX, scndThridY], [l[i][1][0], l[i][1][1]]];
 
-            ctx.beginPath();
-            ctx.moveTo(720-300-width, 420-length);
-            ctx.lineTo(720-350-width, 420-30-length);
-            ctx.lineTo(720-400-width, 420-length);
-            ctx.fill();
-
-            window.requestAnimationFrame(onFrame);
+                var baseLength; // acum ar trebui calculata baza , inaltimea, coordonatele varfului inaltimii
+            }
         }
+    }
 
-    </script>
-
-</body>
+    return ctx;
+}

@@ -14,11 +14,14 @@
         <div class="title">
             FracTastic
         </div>
-        <a name="tree" class="active" onclick="changeActive(this); return false;" href="">
+        <a id="tree" name="tree" class="active" onclick="changeActive(this); return false;" href="">
             Tree
         </a>
-        <a name="line" class="" onclick="changeActive(this); return false;" href="" >
-            line
+        <a id="line" name="line" class="" onclick="changeActive(this); return false;" href="" >
+            Line
+        </a>
+        <a id="triangle" name="triangle" class="" onclick="changeActive(this); return false;" href="" >
+            Triangle
         </a>
     </div>
           
@@ -26,76 +29,283 @@
         <span class="title">
             Rules:
         </span> 
-        
-        <button onclick="draw()">Generate</button>
+        <form>
+            <span id="rules">
+                <span>
+                    <label for="ruleLength">Length</label>
+                    <input id="ruleLength" name="ruleLength" type="number" min="10" max="100" value="60">
+                </span>
+                
+                <span>
+                    <label for="ruleDepth">Depth</label>
+                    <input id="ruleDepth" name="ruleDepth" type="number" min="1" max="20" value="8">
+                </span>
+                
+                <span>
+                    <label for="ruleRamification">Max Ramification</label>
+                    <input id="ruleRamification" name="ruleRamification" type="number" min="1" max="10" value="5">
+                </span>
+            </span>
+
+            <button class="generate-button" onclick="changeActive(document.getElementsByClassName('active')[0]); return false;">Generate</button>
+
+        </form>        
     </div>
 
-    <canvas class="content" id="myCanvas">
+    <canvas class="content" id="myCanvas" width="1000" height="550">
         Your browser does not support the HTML5 canvas tag.
     </canvas>
 </body>
 </html>
 
 <script>
+    changeActive(document.getElementById("tree"));
+
     function changeActive(elmnt){
+        var updateRules = true;
+
+        if ( document.getElementsByClassName('active')[0] == elmnt){
+            updateRules = false;
+        }
+
         document.getElementsByClassName('active')[0].classList.remove('active');
         elmnt.classList.add('active');
 
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+        ctx.clearRect(0, 0, c.width, c.height);
+
         switch(elmnt.name) {
             case 'tree':
-                draw();
+
+                if ( updateRules == true ){
+                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/tree.html" ></object>';
+                }
+
+                var ruleLength = document.getElementById('ruleLength');
+                var ruleDepth = document.getElementById('ruleDepth');
+                var ruleRamification = document.getElementById('ruleRamification');
+
+                if ( ruleLength.value < 10 ){
+                    ruleLength.value = 10;
+                } else if ( ruleLength.value > 100 ) {
+                    ruleLength.value = 100;
+                }
+
+                if ( ruleDepth.value < 1 ){
+                    ruleDepth.value = 1;
+                } else if ( ruleDepth.value > 20 ) {
+                    ruleDepth.value = 20;
+                }
+
+                if ( ruleRamification.value < 1 ){
+                    ruleRamification.value = 1;
+                } else if ( ruleRamification.value > 10 ) {
+                    ruleRamification.value = 10;
+                }
+
+                // let body = {
+                //     ctx: JSON.stringify(ctx),
+                //     ruleLength: ruleLength.value,
+                //     ruleDepth: ruleDepth.value,
+                //     ruleRamification: ruleRamification.value   
+                // };
+                // fetch('https://us-central1-fractalsline.cloudfunctions.net/line', {method: "POST",
+                //     headers:{'Content-Type': 'application/json'},body:JSON.stringify(body)})
+                // .then(res=>{
+                //     ctx =  res.json()
+                //     ctx.stroke();
+                // })
+                
+
+                ctx = drawTree(ctx, 500, 500, ruleLength.value, -Math.PI / 2, ruleDepth.value, ruleRamification.value);
+                ctx.stroke();
+
                 return false;
+
             case 'line':
-                // code block
-                break;
+
+                if ( updateRules == true ){
+                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/line.html" ></object>';
+                }
+
+                ctx = drawLine(ctx, 0, 500, 1000, 500, 1);
+                ctx.stroke();
+
+                return false;
+
+            case 'triangle':
+
+                if ( updateRules == true ){
+                    document.getElementById("rules").innerHTML='<object type="text/html" data="rules/triangle.html" ></object>';
+                }
+
+                var ruleIterations = document.getElementById('ruleIterations');
+
+                if ( ruleIterations != null ){
+                    if ( ruleIterations.value < 1 ){
+                        iters = 1;
+                    } else if ( ruleIterations.value > 20 ) {
+                        iters = 20;
+                    } else {
+                        iters = ruleIterations.value;
+                    }
+                    console.log(iters)
+                } else {
+                    iters = 3;
+                    console.log('nope');
+                }
+
+                ctx = drawTriangle(ctx, iters);
+                ctx.stroke();
+
+                return false;
             default:
                 console.log('err');
+                return false;
         }
 
         return false;
     }
 
-    function draw(){
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
-
-        drawTree(ctx, 200, 600, 60, -Math.PI / 2, 8, 15);
-    }
-
-    function drawTree(ctx, startX, startY, length, angle, depth, branchWidth) {
-        var rand = Math.random;
-        var newLength, newAngle, newDepth, maxBranch = 3,
-        endX, endY, maxAngle = 2 * Math.PI / 6, subBranches;
-
+    function drawTree(ctx, startX, startY, length, angle, depth, maxBranch){
         ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        endX = startX + length * Math.cos(angle);
-        endY = startY + length * Math.sin(angle);
-        ctx.lineCap = 'round';
-        ctx.lineWidth = branchWidth;
-        ctx.lineTo(endX, endY);
 
-        if (depth <= 2) {
-            ctx.strokeStyle = 'rgb(0,' + (((rand() * 64) + 128) >> 0) + ',0)';
-        }
-        else {
-            ctx.strokeStyle = 'rgb(0,' + (((rand() * 64) + 64) >> 0) + ',20)';
-        }
-        ctx.stroke();
-        newDepth = depth - 1;
+        var subBranches = [[startX, startY, length, angle]];
 
-        if(!newDepth) {
-            return;
-        }
-        subBranches = (rand() * (maxBranch - 1)) + 1;
-        branchWidth *= 0.7;
+        while ( depth > 0 ){
+            var rand = Math.random;
+            var maxAngle = 2 * Math.PI / 6;
 
-        for (var i = 0; i < subBranches; i++) {
-            newAngle = angle + rand() * maxAngle - maxAngle * 0.5;
-            newLength = length * (0.7 + rand() * 0.3);
-            drawTree(ctx, endX, endY, newLength, newAngle, newDepth, branchWidth);
+            var branches = subBranches;
+            subBranches = []
+
+            for ( var i = 0; i < branches.length; i++){
+                var startX = branches[i][0];
+                var startY = branches[i][1];
+                var length = branches[i][2];
+                var angle = branches[i][3];
+
+                ctx.moveTo(startX, startY);
+
+                endX = startX + length * Math.cos(angle);
+                endY = startY + length * Math.sin(angle);
+                ctx.lineCap = 'round';
+                ctx.lineTo(endX, endY);
+
+                subBr = (rand() * (maxBranch)) + 1;
+
+                for (var j = 0; j < subBr; j++) {
+                    newAngle = angle + rand() * maxAngle - maxAngle * 0.5;
+                    newLength = length * (0.7 + rand() * 0.3);
+
+                    subBranches[j] = [endX, endY, newLength, newAngle];
+
+                maxAngle = newAngle*0.5
+                    
+                }
+
+            }
+
+            depth--;
+        }
+        
+        return ctx;
+    };
+        
+    function drawLine(ctx, aX, aY, bX, bY, iterations){
+        ctx.beginPath();
+
+        var lines = [[[aX, aY], [bX, bY]]];
+
+        while ( iterations > 0 ){
+            iterations--;
+            var l = lines;
+
+            lines = [];
+
+            for ( var i = 0; i < l.length; i++ ){ // pentru fiecare pereche [ax, ay] , [bx, by]
+                ctx.moveTo(l[i][0][0], l[i][0][1]);
+                ctx.lineTo(l[i][1][0], l[i][1][1]);
+
+                if ( iterations > 0 ){
+                    var frstThirdX = l[i][0][0] + ( l[i][1][0] - l[i][0][0] ) * ( 1 / 3);
+                    var frstThirdY = l[i][0][1] + ( l[i][1][1] + l[i][0][1] ) * ( 1 / 3);
+                    var scndThridX = l[i][0][0] + ( l[i][1][0] - l[i][0][0] ) * ( 2 / 3);
+                    var scndThridY = l[i][0][1] + ( l[i][1][1] - l[i][0][1] ) * ( 2 / 3);
+
+                    lines[lines.length] = [[l[i][0][0], l[i][0][1]], [frstThirdX, frstThirdY]];
+                    lines[lines.length] = [[scndThridX, scndThridY], [l[i][1][0], l[i][1][1]]];
+
+                    var baseLength;
+                }
+            }
         }
 
+        return ctx;
     }
 
+    function drawTriangle(ctx, iterations){
+        ctx.beginPath();
+
+        var triangles = [
+            [
+                [211, 525],
+                [788, 525],
+                [500, 25]
+            ]
+        ]
+
+        while ( iterations > 0 ){
+            var T = triangles;
+            triangles = [];
+            console.log("work");
+            for ( var i = 0; i < T.length; i++ ){
+                ctx.moveTo(T[i][0][0], T[i][0][1]);
+                ctx.lineTo(T[i][1][0], T[i][1][1]);
+                ctx.lineTo(T[i][2][0], T[i][2][1]);
+                ctx.lineTo(T[i][0][0], T[i][0][1]);
+
+                var midABx = ( T[i][0][0] + T[i][1][0] ) / 2;
+                var midABy = ( T[i][0][1] + T[i][1][1] ) / 2;
+
+                ctx.moveTo(midABx, midABy);
+                
+                var midBCx = ( T[i][1][0] + T[i][2][0] ) / 2;
+                var midBCy = ( T[i][1][1] + T[i][2][1] ) / 2;
+
+                ctx.lineTo(midBCx, midBCy);
+
+                var midCAx = ( T[i][2][0] + T[i][0][0] ) / 2;
+                var midCAy = ( T[i][2][1] + T[i][0][1] ) / 2;
+
+                ctx.lineTo(midCAx, midCAy);
+                ctx.lineTo(midABx, midABy);
+
+                triangles[triangles.length] = [
+                    [midABx, midABy],
+                    [T[i][0][0], T[i][0][1]],
+                    [midCAx,, midCAy]
+                ];
+
+                triangles[triangles.length] = [
+                    [midBCx, midBCy],
+                    [T[i][1][0], T[i][1][1]],
+                    [midABx, midABy]
+                ];
+
+                triangles[triangles.length] = [
+                    [midCAx, midCAy],
+                    [T[i][2][0], T[i][2][1]],
+                    [midBCx, midBCy]
+                ];
+
+            }
+
+            iterations--;
+        }
+
+        return ctx;
+    }
 </script>
